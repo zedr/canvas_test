@@ -10,6 +10,7 @@
     this.height = canvas.height;
     this.context = canvas.getContext("2d");
     this.actors = [];
+    this.player = null;
   }
 
   World.prototype.clearCanvas = function () {
@@ -71,27 +72,20 @@
     this.position = [px || 0, py || 0];
   }
 
-  function processKeys(event) {
-    var code = event.keyCode;
-
-    if (code == 37) {
-      world.moveActor(player, -4, 0);
-    } else if (code == 38) {
-      world.moveActor(player, 0, -4);
-    } else if (code === 39) {
-      world.moveActor(player, 4, 0);
-    } else if (code === 40) {
-      world.moveActor(player, 0, 4);
-    }
+  function bindMouseToCanvas(canvas) {
+    canvas.addEventListener('click', function (event) {
+      NS.console.log(event.clientX, event.clientY, canvas.getBoundingClientRect());
+    })
   }
 
   function init() {
     canvas = NS.document.getElementById("target");
     NS.console.log("Found a canvas at " + canvas.width + "x" + canvas.height);
-    NS.document.onkeypress = processKeys;
+    bindMouseToCanvas(canvas);
     world = new World(canvas);
     player = new Actor("player_1", 10, 10, world.width / 2, world.height / 2);
     world.addActor(player);
+    world.player = player;
     world.start();
   }
 
