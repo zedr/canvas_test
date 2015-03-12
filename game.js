@@ -47,12 +47,16 @@
     if (this.isWithinBounds(x, y, l, m))
       actor.position = [x, y];
   }
+  
+  World.prototype.update = function () {
+    this.clearCanvas();
+    this.renderActors();
+  }
 
   World.prototype.tick = function () {
     NS.requestAnimationFrame(this.tick.bind(this));
     this.context.save();
-    this.clearCanvas();
-    this.renderActors();
+    this.update();
     this.context.restore();
   }
 
