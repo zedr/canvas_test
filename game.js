@@ -2,94 +2,95 @@
   "use strict";
 
   var canvas,
-      context,
-      sx = 0,
-      sy = 0,
-      sw = 50,
-      sh = 50,
-      increment = 4,
-      speed = 0,
-      termVel = 50,
-      ship,
-      shipUrl = "ship.png";
+      world,
+      player;
 
-  function clearCanvas() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+  function World(canvas) {
+    this.width = canvas.width;
+    this.height = canvas.height;
+    this.context = canvas.getContext("2d");
+    this.actors = [];
   }
 
-  function drawGrid() {
-    for (var x = 10.5; x < canvas.width; x += 10) {
-      context.moveTo(x, 0);
-      context.lineTo(x, canvas.height);
-    }
-    context.strokeStyle = "rgb(100, 100, 100)";
-    context.stroke();
+  World.prototype.clearCanvas = function () {
+    this.context.clearRect(0, 0, this.width, this.height);
   }
 
-  function drawSquare() {
-    context.fillStyle = "rgb(200, 0, 0)";
-    context.fillRect(sx, sy, sw, sh);
+  World.prototype.addActor = function (actor) {
+    this.actors.push(actor);
   }
 
-  function isInBounds() {
-    return ((sx + sw < canvas.width) && (sy + sh < canvas.height))
+  World.prototype.render = function (actor) {
+    var pos = actor.position,
+        dim = actor.dimensions;
+    this.context.fillStyle = (actor.style || "black");
+    this.context.fillRect(pos[0], pos[1], dim[0], dim[1]);
+  }
+
+  World.prototype.renderActors = function () {
+    var actorsCount = this.actors.length;
+    for (var i = 0; i < actorsCount; i++)
+      this.render(this.actors[i]);
+  }
+
+  World.prototype.isWithinBounds = function (x, y, l, m) {
+    return ((x >= 0 && y >= 0) && (l < this.width && m < this.height))
+  }
+
+  World.prototype.moveActor = function (actor, a, b) {
+    var pos = actor.position,
+        dim = actor.dimensions,
+        x = pos[0] + a,
+        y = pos[1] + b,
+        l = x + dim[0],
+        m = y + dim[1];
+    if (this.isWithinBounds(x, y, l, m))
+      actor.position = [x, y];
+  }
+
+  World.prototype.tick = function () {
+    NS.requestAnimationFrame(this.tick.bind(this));
+    this.context.save();
+    this.clearCanvas();
+    this.renderActors();
+    this.context.restore();
+  }
+
+  World.prototype.start = function () {
+    this.tick();
+  }
+
+  function Actor(name, w, h, px, py) {
+    this.name = name;
+    this.style = "rgb(200, 0, 0)";
+    this.dimensions = [w || 50, h || 50];
+    this.position = [px || 0, py || 0];
   }
 
   function processKeys(event) {
     var code = event.keyCode;
 
     if (code == 37) {
-      sx -= increment;
+      world.moveActor(player, -4, 0);
     } else if (code == 38) {
-      sy -= increment;
+      world.moveActor(player, 0, -4);
     } else if (code === 39) {
-      sx += increment;
+      world.moveActor(player, 4, 0);
     } else if (code === 40) {
-      sy += increment;
+      world.moveActor(player, 0, 4);
     }
-  }
-
-  function applyGravity() {
-    if (speed < termVel)
-      speed++;
-    if (sy < canvas.height)
-      sy += speed;
-  }
-
-  function displayDebugText() {
-    context.font = "bold 12px sans-serif";
-    context.fillText("Hello", 250, 50);
-  }
-
-  function loadShip () {
-    ship = new Image();
-    ship.src = shipUrl;
-  }
-
-  function drawShip() {
-    context.drawImage(ship, 400, 50);
-  }
-
-  function tick() {
-    NS.requestAnimationFrame(tick);
-    context.save();
-    clearCanvas();
-    drawSquare();
-    drawShip();
-    //applyGravity();
-    displayDebugText();
-    context.restore();
   }
 
   function init() {
     canvas = NS.document.getElementById("target");
-    NS.console.log("Found canvas " + canvas.width + "x" + canvas.height);
-    context = canvas.getContext("2d");
+    NS.console.log("Found a canvas at " + canvas.width + "x" + canvas.height);
     NS.document.onkeypress = processKeys;
-    tick();
+    world = new World(canvas);
+    player = new Actor("player_1", 10, 10, world.width / 2, world.height / 2);
+    world.addActor(player);
+    world.start();
   }
 
-  loadShip();
   NS.onload = init;
 
 }(window));
