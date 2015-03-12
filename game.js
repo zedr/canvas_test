@@ -63,7 +63,7 @@
   function Actor(name, w, h, px, py) {
     this.name = name;
     this.style = "rgb(200, 0, 0)";
-    this.dimensions = [w || 50, h || 50];
+    this.dimensions = [w || 10, h || 10];
     this.position = [px || 0, py || 0];
   }
 
