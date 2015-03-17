@@ -4,7 +4,11 @@
   var canvas,
       world,
       player,
-      offset;
+      offset,
+      abs = Math.abs,
+      sin = Math.sin,
+      cos = Math.cos,
+      atan2 = Math.atan2;
 
   function getCanvasOffset(canvas) {
     var box = canvas.getBoundingClientRect();
@@ -64,18 +68,19 @@
         dy,
         x,
         y,
-        incr;
+        ang,
+        speed = 1;
 
     if (dest) {
       dx = dest[0];
       dy = dest[1];
-      incr = (dx > px) ? 1 : -1;
-      if (px === dx && py == dy) {
+      if (abs(px - dx) < 1 && abs(py - dy) < 1) {
         actor.destination = null;
       } else {
-        x = px + incr
-        y = ((dy - py) * (x - px)) / (dx - px) + py;
-        this.positionActor(actor, x, y);
+        ang = atan2(py - dy, px - dx);
+        x = cos(ang) * speed;
+        y = sin(ang) * speed;
+        this.positionActor(actor, px - x, py - y);
       }
     }
   }
