@@ -85,7 +85,7 @@
         y /= len;
         x *= speed;
         y *= speed;
-        this.positionActor(actor, px - x, py - y);
+        this.positionActor(actor, px + x, py + y);
       }
     }
   }
@@ -112,12 +112,14 @@
     this.style = "rgb(200, 0, 0)";
     this.dimensions = [w || 10, h || 10];
     this.position = [px || 0, py || 0];
-    this.speed = 2;
+    this.speed = 4;
     this.destination = null;
   }
 
   Actor.prototype.setDestination = function (x, y) {
-    this.destination = [x, y];
+    var a = this.dimensions[0] / 2,
+        b = this.dimensions[1] / 2;
+    this.destination = [x - a, y - b];
   }
 
   function processMouseClick(x, y) {
