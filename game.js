@@ -6,9 +6,7 @@
       player,
       offset,
       abs = Math.abs,
-      sin = Math.sin,
-      cos = Math.cos,
-      atan2 = Math.atan2;
+      sqrt = Math.sqrt;
 
   function getCanvasOffset(canvas) {
     var box = canvas.getBoundingClientRect();
@@ -71,7 +69,7 @@
         dy,
         x,
         y,
-        ang,
+        len,
         speed = actor.speed;
 
     if (dest) {
@@ -80,9 +78,13 @@
       if (abs(px - dx) < 2 && abs(py - dy) < 2) {
         actor.destination = null;
       } else {
-        ang = atan2(py - dy, px - dx);
-        x = cos(ang) * speed;
-        y = sin(ang) * speed;
+        x = dx - px;
+        y = dy - py;
+        len = sqrt(x * x + y * y);
+        x /= len;
+        y /= len;
+        x *= speed;
+        y *= speed;
         this.positionActor(actor, px - x, py - y);
       }
     }
