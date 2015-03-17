@@ -56,6 +56,9 @@
         m = y + dim[1];
     if (this.isWithinBounds(x, y, l, m)) {
       actor.position = [x, y];
+    } else {
+      // Stop the actor
+      actor.destination = null;
     }
   }
 
@@ -69,12 +72,12 @@
         x,
         y,
         ang,
-        speed = 1;
+        speed = actor.speed;
 
     if (dest) {
       dx = dest[0];
       dy = dest[1];
-      if (abs(px - dx) < 1 && abs(py - dy) < 1) {
+      if (abs(px - dx) < 2 && abs(py - dy) < 2) {
         actor.destination = null;
       } else {
         ang = atan2(py - dy, px - dx);
@@ -107,6 +110,7 @@
     this.style = "rgb(200, 0, 0)";
     this.dimensions = [w || 10, h || 10];
     this.position = [px || 0, py || 0];
+    this.speed = 2;
     this.destination = null;
   }
 
