@@ -10,7 +10,8 @@
 
   function getCanvasOffset(canvas) {
     var box = canvas.getBoundingClientRect();
-    return box.x;
+    // x for Firefox, left for Chrome
+    return box.x || box.left; 
   }
 
   function World(canvas) {
