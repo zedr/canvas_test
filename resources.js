@@ -8,7 +8,7 @@
     this.actors = [];
     this.player = null;
   }
-
+  
   World.prototype.loadCanvas = function (canvas) {
     this.width = canvas.width;
     this.height = canvas.height;

@@ -6,10 +6,9 @@
       Actor = NS.Resources.Actor,
       canvas,
       world,
-      player,
-      offset;
+      player;
 
-  function getCanvasOffset(canvas) {
+  function getCanvasOffset (canvas) {
     var box = canvas.getBoundingClientRect();
     // x for Firefox, left for Chrome
     return box.x || box.left; 
@@ -20,6 +19,7 @@
   }
 
   function bindMouseToCanvas(canvas) {
+    var offset = getCanvasOffset(canvas);
     canvas.addEventListener('click', function (event) {
       processMouseClick(event.clientX - offset, event.clientY - offset);
     })
@@ -29,7 +29,6 @@
     canvas = NS.document.getElementById("target");
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
-    offset = getCanvasOffset(canvas);
     NS.console.log("Found a canvas at " + canvas.width + "x" + canvas.height);
     bindMouseToCanvas(canvas);
     world = new World();
