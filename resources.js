@@ -35,8 +35,9 @@
   World.prototype.renderActors = function () {
     var actorsCount = this.actors.length;
 
-    for (var i = 0; i < actorsCount; i++)
+    for (var i = 0; i < actorsCount; i++) {
       this.render(this.actors[i]);
+    }
   }
 
   World.prototype.isWithinBounds = function (x, y, l, m) {
@@ -114,15 +115,62 @@
   }
 
   Actor.prototype.setDestination = function (x, y) {
-    var a = this.dimensions[0] / 2,
-        b = this.dimensions[1] / 2;
+    var a = x - (this.dimensions[0] / 2),
+        b = y - (this.dimensions[1] / 2);
 
-    this.destination = [x - a, y - b];
+    this.destination = [a, b];
   }
 
+  function Game() {
+    this.world = new World();
+  }
+
+  Game.prototype.getCanvasOffset = function () {
+    var box = this.canvas.getBoundingClientRect();
+
+    // x for Firefox, left for Chrome
+    return box.x || box.left; 
+  }
+
+  Game.prototype.setCanvas = function (canvas) {
+    if (canvas) {
+      this.canvas = canvas;
+      this.world.loadCanvas(canvas);
+      this.offset = this.getCanvasOffset();
+    }
+  }
+
+  Game.prototype.handleClick = function (event) {
+    var offset = this.offset,
+        x = event.clientX - offset, 
+        y = event.clientY - offset;
+
+    this.world.player.setDestination(x, y);
+  }
+
+  Game.prototype.bindController = function (name) {
+    if (name === "mouse") {
+      this.canvas.addEventListener("click", this.handleClick.bind(this));
+      this.canvas.oncontextmenu = function (event) {event.preventDefault();};
+    }
+  }
+
+  Game.prototype.start = function () {
+    var world = this.world,
+        player = new Actor("p1", 10, 10, world.width / 2, world.height / 2)
+
+    if (world.context) {
+      world.addActor(player);
+      world.player = player;
+      world.start();
+    } else {
+      throw("Please set a canvas first.");
+    }
+  }
+
+
   NS.Resources = {
-    "Actor": Actor,
-    "World": World
+    "Game": Game
   };
 
 }(this));
