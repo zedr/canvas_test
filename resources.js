@@ -27,12 +27,14 @@
     var pos = actor.position,
         dim = actor.dimensions,
         style = (actor.destination) ? "yellow" : actor.style;
+
     this.context.fillStyle = style;
     this.context.fillRect(pos[0], pos[1], dim[0], dim[1]);
   }
 
   World.prototype.renderActors = function () {
     var actorsCount = this.actors.length;
+
     for (var i = 0; i < actorsCount; i++)
       this.render(this.actors[i]);
   }
@@ -46,6 +48,7 @@
         dim = actor.dimensions,
         l = x + dim[0],
         m = y + dim[1];
+
     if (this.isWithinBounds(x, y, l, m)) {
       actor.position = [x, y];
     } else {
@@ -113,6 +116,7 @@
   Actor.prototype.setDestination = function (x, y) {
     var a = this.dimensions[0] / 2,
         b = this.dimensions[1] / 2;
+
     this.destination = [x - a, y - b];
   }
 

@@ -1,8 +1,7 @@
 (function (NS) {
   "use strict";
 
-  var 
-      World = NS.Resources.World,
+  var World = NS.Resources.World,
       Actor = NS.Resources.Actor,
       canvas,
       world,
@@ -10,6 +9,7 @@
 
   function getCanvasOffset (canvas) {
     var box = canvas.getBoundingClientRect();
+
     // x for Firefox, left for Chrome
     return box.x || box.left; 
   }
@@ -20,6 +20,7 @@
 
   function bindMouseToCanvas(canvas) {
     var offset = getCanvasOffset(canvas);
+
     canvas.addEventListener('click', function (event) {
       processMouseClick(event.clientX - offset, event.clientY - offset);
     })
