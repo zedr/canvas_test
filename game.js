@@ -41,4 +41,4 @@
 
   NS.onload = init;
 
-}(window));
+}(this));
