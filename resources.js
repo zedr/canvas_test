@@ -4,14 +4,44 @@
   var abs = Math.abs,
       sqrt = Math.sqrt;
 
-  function World() {
+  function World(x, y) {
     this.actors = [];
     this.player = null;
+    this.size = {
+      x: x,
+      y: y
+    }
   }
-  
+
+  World.prototype.drawGrid = function (context) {
+    for (var x = 0.5; x < this.width; x += 10) {
+      context.moveTo(x, 0);
+      context.lineTo(x, this.height);
+    }
+
+    for (var y = 0.5; y < this.height; y += 10) {
+      context.moveTo(0, y);
+      context.lineTo(this.width, y);
+    }
+
+    context.strokeStyle = "#333333";
+    context.stroke();
+  }
+
+  World.prototype.createGridImage = function () {
+    var cnvs = NS.document.createElement("canvas"),
+        ctxt;
+
+    cnvs.width = this.width;
+    cnvs.height = this.height;
+    ctxt = cnvs.getContext("2d");
+    this.drawGrid(ctxt);
+    return cnvs;
+  }
+
   World.prototype.loadCanvas = function (canvas) {
-    this.width = canvas.width;
-    this.height = canvas.height;
+    this.width = this.size.x || canvas.width;
+    this.height = this.size.y || canvas.height;
     this.context = canvas.getContext("2d");
   }
 
@@ -87,9 +117,14 @@
       }
     }
   }
+
+  World.prototype.renderBackground = function () {
+    this.context.drawImage(this._bg, 0, 0);
+  }
   
   World.prototype.update = function () {
     this.clearContext();
+    this.renderBackground();
     this.moveActor(this.actors[0]);
     this.renderActors();
   }
@@ -102,6 +137,7 @@
   }
 
   World.prototype.start = function () {
+    this._bg = this.createGridImage();
     this.tick();
   }
   
