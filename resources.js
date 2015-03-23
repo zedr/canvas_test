@@ -91,14 +91,14 @@
   World.prototype.moveActor = function (actor) {
     var pos = actor.position,
         dest = actor.destination,
+        speed = actor.speed,
         px = pos[0],
         py = pos[1],
+        len,
         dx,
         dy,
         x,
-        y,
-        len,
-        speed = actor.speed;
+        y;
 
     if (dest) {
       dx = dest[0];
