@@ -2,15 +2,17 @@
   "use strict";
 
   var abs = Math.abs,
-      sqrt = Math.sqrt;
+    sqrt = Math.sqrt;
 
-  function World(x, y) {
+  function World(w, h) {
     this.actors = [];
     this.player = null;
-    this.size = {
-      x: x,
-      y: y
-    }
+    this.width = w;
+    this.height = h;
+    this.viewport = {
+      x: 0,
+      y: 0
+    };
   }
 
   World.prototype.drawGrid = function (context) {
@@ -30,7 +32,7 @@
 
   World.prototype.createGridImage = function () {
     var cnvs = NS.document.createElement("canvas"),
-        ctxt;
+      ctxt;
 
     cnvs.width = this.width;
     cnvs.height = this.height;
@@ -40,8 +42,8 @@
   }
 
   World.prototype.loadCanvas = function (canvas) {
-    this.width = this.size.x || canvas.width;
-    this.height = this.size.y || canvas.height;
+    this.viewport.x == canvas.width;
+    this.viewport.y == canvas.height;
     this.context = canvas.getContext("2d");
   }
 
@@ -55,8 +57,8 @@
 
   World.prototype.render = function (actor) {
     var pos = actor.position,
-        dim = actor.dimensions,
-        style = (actor.destination) ? "yellow" : actor.style;
+      dim = actor.dimensions,
+      style = (actor.destination) ? "yellow" : actor.style;
 
     this.context.fillStyle = style;
     this.context.fillRect(pos[0], pos[1], dim[0], dim[1]);
@@ -76,9 +78,9 @@
 
   World.prototype.positionActor = function (actor, x, y) {
     var pos = actor.position,
-        dim = actor.dimensions,
-        l = x + dim[0],
-        m = y + dim[1];
+      dim = actor.dimensions,
+      l = x + dim[0],
+      m = y + dim[1];
 
     if (this.isWithinBounds(x, y, l, m)) {
       actor.position = [x, y];
@@ -90,15 +92,15 @@
 
   World.prototype.moveActor = function (actor) {
     var pos = actor.position,
-        dest = actor.destination,
-        speed = actor.speed,
-        px = pos[0],
-        py = pos[1],
-        len,
-        dx,
-        dy,
-        x,
-        y;
+      dest = actor.destination,
+      speed = actor.speed,
+      px = pos[0],
+      py = pos[1],
+      len,
+    dx,
+    dy,
+    x,
+    y;
 
     if (dest) {
       dx = dest[0];
@@ -121,7 +123,7 @@
   World.prototype.renderBackground = function () {
     this.context.drawImage(this._bg, 0, 0);
   }
-  
+
   World.prototype.update = function () {
     this.clearContext();
     this.renderBackground();
@@ -140,7 +142,7 @@
     this._bg = this.createGridImage();
     this.tick();
   }
-  
+
   function Actor(name, w, h, px, py) {
     this.name = name;
     this.style = "rgb(200, 0, 0)";
@@ -152,13 +154,13 @@
 
   Actor.prototype.setDestination = function (x, y) {
     var a = x - (this.dimensions[0] / 2),
-        b = y - (this.dimensions[1] / 2);
+      b = y - (this.dimensions[1] / 2);
 
     this.destination = [a, b];
   }
 
   function Game() {
-    this.world = new World();
+    this.world = new World(1024, 1024);
   }
 
   Game.prototype.getCanvasOffset = function () {
@@ -178,8 +180,8 @@
 
   Game.prototype.handleClick = function (event) {
     var offset = this.offset,
-        x = event.clientX - offset, 
-        y = event.clientY - offset;
+      x = event.clientX - offset, 
+      y = event.clientY - offset;
 
     this.world.player.setDestination(x, y);
   }
@@ -193,7 +195,7 @@
 
   Game.prototype.start = function () {
     var world = this.world,
-        player = new Actor("p1", 10, 10, world.width / 2, world.height / 2)
+      player = new Actor("p1", 10, 10, world.width / 2, world.height / 2)
 
     if (world.context) {
       world.addActor(player);
