@@ -118,13 +118,29 @@
   }
 
   World.prototype.renderBackground = function () {
-    this.context.drawImage(this._bg, 0, 0);
+    var pos = this.player.position;
+
+    this.context.drawImage(this._bg, pos[0], pos[1]);
+  }
+
+  World.prototype.displayDebug = function () {
+    var pos = this.player.position,
+        posX = Math.floor(pos[0]),
+        posY = Math.floor(pos[1]),
+        worldX = this.width,
+        worldY = this.height;
+
+    this.context.fillStyle = "rgb(255, 0, 0)";
+    this.context.fillText("Player: " + posX + ", " + posY, 10, 20);
+    this.context.fillStyle = "rgb(128, 128, 0)";
+    this.context.fillText("World: " + worldX + ", " + worldY, 10, 35);
   }
 
   World.prototype.update = function () {
     this.clearContext();
     this.renderBackground();
     this.moveActor(this.actors[0]);
+    this.displayDebug();
     this.renderActors();
   }
 
