@@ -1,9 +1,6 @@
 (function (NS) {
   "use strict";
 
-  var abs = Math.abs,
-    sqrt = Math.sqrt;
-
   function World(w, h) {
     this.actors = [];
     this.player = null;
@@ -105,12 +102,12 @@
     if (dest) {
       dx = dest[0];
       dy = dest[1];
-      if (abs(px - dx) < 2 && abs(py - dy) < 2) {
+      if (Math.abs(px - dx) < 2 && Math.abs(py - dy) < 2) {
         actor.destination = null;
       } else {
         x = dx - px;
         y = dy - py;
-        len = sqrt(x * x + y * y);
+        len = Math.sqrt(x * x + y * y);
         x /= len;
         y /= len;
         x *= speed;
