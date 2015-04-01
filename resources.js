@@ -120,7 +120,7 @@
   World.prototype.renderBackground = function () {
     var pos = this.player.position;
 
-    this.context.drawImage(this._bg, pos[0], pos[1]);
+    this.context.drawImage(this._bg, 0, 0);
   }
 
   World.prototype.displayDebug = function () {
