@@ -1,5 +1,3 @@
-(function (NS) {
-  "use strict";
 
   function World(w, h) {
     this.actors = [];
@@ -39,8 +37,8 @@
   }
 
   World.prototype.loadCanvas = function (canvas) {
-    this.viewport.x == canvas.width;
-    this.viewport.y == canvas.height;
+    this.viewport.x = canvas.width;
+    this.viewport.y = canvas.height;
     this.context = canvas.getContext("2d");
   }
 

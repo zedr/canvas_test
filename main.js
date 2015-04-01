@@ -2,12 +2,13 @@
   "use strict";
 
   NS.onload = function () {
-    var gameApp = new NS.Resources.Game(),
+    var game = new NS.Game(),
       canvas = NS.document.getElementById("target");
 
-    gameApp.setCanvas(canvas);
-    gameApp.bindController("mouse");
-    gameApp.start();
+    game.camera.attach(canvas);
+    game.players[0].controller = "mouse";
+    //game.start();
+    NS.game = game;
   }
 
 }(this));
