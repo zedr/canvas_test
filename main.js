@@ -6,6 +6,7 @@
       canvas = NS.document.getElementById("target");
 
     game.camera.attach(canvas);
+    game.addPlayer();
     game.players[0].controller = "mouse";
     //game.start();
     NS.game = game;
