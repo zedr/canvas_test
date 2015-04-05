@@ -8,7 +8,7 @@
     game.camera.attach(canvas);
     game.addPlayer();
     game.players[0].controller = "mouse";
-    //game.start();
+    game.start();
     NS.game = game;
   }
 

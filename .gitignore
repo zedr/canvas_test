@@ -1,2 +1,3 @@
 # Temporary files
 _*.js
+!_resources.js
