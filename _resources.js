@@ -16,16 +16,17 @@
 
   function Entity(type) {
     this.name = "Unnamed";
-    this.type = type || "Entity";
+    this.type = "Entity";
   }
 
   Entity.prototype.render = function () {}
 
   function Actor() {
     this.position = {};
+    this.type = "Actor";
   }
 
-  Actor.prototype = new Entity("Actor");
+  Actor.prototype = new Entity();
 
   function Player(name) {
     this.name = (name === undefined) ? "Unnamed Player" : name;
@@ -34,9 +35,10 @@
     LOG("Initialised Player: " + this.name);
   }
 
-  Player.prototype = new Actor("Player");
+  Player.prototype = new Actor();
 
   function Debugger() {
+    this.type = "Debugger";
     this.targets = Array.prototype.slice.call(arguments, 0);
     this.position = {
       x: 10,
