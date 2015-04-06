@@ -1,15 +1,12 @@
-(function (NS) {
+(function(NS) {
   "use strict";
 
-  NS.onload = function () {
-    var game = new NS.Game(),
+  NS.onload = function() {
+    var myGame = NS.gameApp.create(),
       canvas = NS.document.getElementById("target");
 
-    game.camera.attach(canvas);
-    game.addPlayer();
-    game.players[0].controller = "mouse";
-    game.start();
-    NS.game = game;
+    myGame.display(canvas).start();
+    NS.myGame = myGame;
   }
 
 }(this));

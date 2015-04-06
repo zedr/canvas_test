@@ -1,140 +1,142 @@
-(function (NS, undefined) {
+(function(NS) {
   "use strict";
 
-  var LOG = NS.console.log.bind(NS.console);
+  var LOG = NS.console.log.bind(NS.console),
+    gameApp = {
+      type: "Game"
+    },
+    entity = {
+      type: "Entity",
+      render: function(context) {},
+    },
+    world = Object.create(entity),
+    actor = extend(entity, {
+      type: "Actor",
+      position: {
+        x: null,
+        y: null
+      },
+      size: {
+        w: 0,
+        h: 0
+      }
+    }),
+    camera = Object.create(entity),
+    player = Object.create(actor);
 
-  function snapshot(entity, context, renderer) {
+  function snapshot(entity, context) {
     var canvas = NS.document.createElement("canvas"),
       context;
 
     canvas.width = entity.width;
     canvas.height = entity.height;
     context = canvas.getContext("2d");
-    renderer.call(entity, context);
+    entity.render(context);
     return canvas;
   }
 
-  function Entity(type) {
-    this.name = "Unnamed";
-    this.type = "Entity";
+  function extend(entity, attributes) {
+    var newEntity = Object.create(entity),
+      attr;
+
+    for (attr in attributes)
+      if (attributes.hasOwnProperty(attr))
+        newEntity[attr] = attributes[attr];
+
+    return newEntity;
   }
 
-  Entity.prototype.render = function () {}
-
-  function Actor() {
-    this.position = {};
-    this.type = "Actor";
-  }
-
-  Actor.prototype = new Entity();
-
-  function Player(name) {
-    this.name = (name === undefined) ? "Unnamed Player" : name;
-    this.type = "Player";
-
-    LOG("Initialised Player: " + this.name);
-  }
-
-  Player.prototype = new Actor();
-
-  function Debugger() {
-    this.type = "Debugger";
-    this.targets = Array.prototype.slice.call(arguments, 0);
-    this.position = {
-      x: 10,
-      y: 10
-    }
-  }
-
-  Debugger.prototype = new Entity("Debugger");
-
-  Debugger.prototype.renderPlayer = function (player, context, offset) {
-    var pos = this.position,
-      posY = pos.y + (offset * 10),
-      pPos = player.position;
-
-    context.fillStyle = "rgb(0, 128, 32)";
-    context.fillText(
-      "Player: " + pPos.x + ", " + pPos.y, pos.x, posY
-    );
-  }
-
-  Debugger.prototype.renderWorld = function (world, context, offset) {
-    context.fillStyle = "rgb(0, 128, 32)";
-    context.fillText(
-      "World: " + world.width + "x" + world.height, 10, 35
-    );
-  }
-
-  Debugger.prototype.render = function (context) {
-    var targetsCount = this.targets.length,
-      entity,
-      idx;
-
-    for (idx = 0; idx < targetsCount; idx++) {
-      entity = this.targets[idx];
-      if (typeof entity.render === "function")
-        if (entity.type === "Player")
-          this.renderPlayer(entity, context, idx);
-        else if (entity.type === "World")
-          this.renderWorld(entity, context, idx);
-    }
-  }
-
-  function Camera(observed) {
-    this.target = observed;
-  }
-
-  Camera.prototype.attach = function(canvas) {
+  camera.type = "Camera";
+  camera.bindToCanvas = function(canvas) {
     this.width = canvas.width;
     this.height = canvas.height;
-
     this.context = canvas.getContext("2d");
+    return this;
+  };
+  camera.render = function(entity, useCache) {
+    var renderer,
+      cached,
+      context = this.context;
 
-    LOG("Initialised Camera with context: " + this.context);
-  }
-
-  Camera.prototype.render = function() {
+    if (useCache === true) {
+      if (!entity._cached) {
+        renderer = entity.render.bind(this);
+        entity._cached = snapshot(entity, context);
+      }
+      return context.drawImage(entity._cached, 0, 0);
+    } else {
+      return entity.render(context);
+    }
+  };
+  camera._update = function() {
     var actors = this.target.actors,
       actorsCount = actors.length,
       context = this.context,
       idx;
 
-    this.context.save();
-
-    this.target.render(context);
+    this.render(this.target, true);
     for (idx = 0; idx < actorsCount; idx++)
       actors[idx].render(context);
+  };
+  camera.create = function(config) {
+    var newCamera = Object.create(this);
 
-    this.context.restore();
-  }
+    if (config)
+      if (config.canvas)
+        newCamera.bindToCanvas(config.canvas);
 
-  function World(width, height) {
-    this.type = "World";
-    this.width = width;
-    this.height = height;
-    this.actors = [];
+    newCamera.update = this._update.bind(newCamera);
 
-    LOG("Initialised World: " + width + "x" + height);
-  }
+    LOG("Initialised Camera with context: " + this.context);
+    return newCamera;
+  };
+  camera.view = function(target) {
+    this.target = target;
+  };
 
-  World.prototype = new Entity("World");
+  player.type = "player";
+  player.create = function(config) {
+    var newPlayer = Object.create(this);
 
-  World.prototype.move = function (actor) {
-  }
+    newPlayer.name = config.name || "Unnamed Player";
 
-  World.prototype.update = function () {
+    if (config.controller === "mouse") ;
+
+    LOG("Created a new player.");
+    return newPlayer;
+  };
+
+  world.type = "World";
+  world.teleport = function(actor, x, y) {
+    this.actors.push(actor);
+  };
+  world.addPlayer = function(player) {
+    this.teleport(player, "center", "center");
+
+    LOG("Welcome, " + player.name + ".");
+  };
+  world.create = function(width, height) {
+    var newWorld = Object.create(this);
+
+    newWorld.width = width;
+    newWorld.height = height;
+    newWorld.actors = [];
+
+    LOG("Created a new world " + width + "x" + height + ".");
+    return newWorld;
+  };
+  world.update = function() {
     var actorsCount = this.actors.length,
       actor,
       idx;
 
     for (idx = 0; idx < actorsCount; idx++) {
       actor = this.actors[idx];
-      this.move(actor);
+      if (actor.destination)
+        this.move(actor);
     }
-  }
-
-  World.prototype.renderBackground = function (context) {
+  };
+  world.renderBackground = function(context) {
     for (var x = 0.5; x < this.width; x += 10) {
       context.moveTo(x, 0);
       context.lineTo(x, this.height);
@@ -148,50 +150,41 @@
     context.strokeStyle = "#333333";
     context.stroke();
   }
+  world.render = function(context) {
+    this.renderBackground(context);
+  };
 
-  World.prototype.render = function (context, offsetX, offsetY) {
-    var renderer;
+  gameApp.create = function() {
+    var newGame = Object.create(this);
 
-    if (typeof this.image === "undefined") {
-      renderer = this.renderBackground.bind(this);
-      this.image = snapshot(this, context, renderer);
-    }
-    context.drawImage(this.image, offsetX || 0, offsetY || 0);
-  }
+    newGame.world = world.create(1024, 1024);
+    newGame.world.addPlayer(player.create({
+      controller: "mouse"
+    }));
 
-  function Game() {
-    this.world = new World(1024, 1024);
-    this.players = [];
-
-    this.camera = new Camera(this.world);
-
-    LOG("Initialised Game: " + this);
-  }
-
-  Game.prototype._tick = function () {
+    LOG("Created a new game.");
+    return newGame;
+  };
+  gameApp._tick = function() {
     NS.requestAnimationFrame(this._tick.bind(this));
 
     this.world.update();
-    this.camera.render();
+    if (this.camera)
+      this.camera.update();
+  };
+  gameApp.display = function(canvas) {
+    this.camera = camera.create({
+      canvas: canvas
+    });
+    this.camera.view(this.world);
+    return this;
   }
-
-  Game.prototype.start = function () {
+  gameApp.start = function() {
     this._tick();
-  }
 
-  Game.prototype.addPlayer = function (name) {
-    var player = new Player(name),
-      debug = new Debugger(this.world, player);
+    LOG("Game started!");
+  };
 
-    player.position = {x: 50, y: 50};
+  NS.gameApp = gameApp;
 
-    this.world.actors.push(player);
-    this.world.actors.push(debug);
-    this.players.push(player);
-
-    LOG("Welcome, " + player.name);
-  }
-
-  NS.Game = Game;
-  
 }(this));
