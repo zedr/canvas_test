@@ -56,15 +56,11 @@
     this.context = canvas.getContext("2d");
     return this;
   };
-  camera.render = function (entity, useCache) {
-    if (useCache === true) {
-      if (!entity._cached) {
-        entity._cached = snapshot(entity);
-      }
-      return this.context.drawImage(entity._cached, 0, 0);
-    } else {
-      return entity.render(this.context);
+  camera.draw = function (entity) {
+    if (!entity._cached) {
+      entity._cached = snapshot(entity);
     }
+    return this.context.drawImage(entity._cached, 0, 0);
   };
   camera._update = function () {
     var actors = this.target.actors,
@@ -72,7 +68,7 @@
         context = this.context,
         idx;
 
-    this.render(this.target, true);
+    this.draw(this.target);
     for (idx = 0; idx < actorsCount; idx++) {
       actors[idx].render(context);
     }
