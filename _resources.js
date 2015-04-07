@@ -7,10 +7,14 @@
       },
       entity = {
         type: "Entity",
-        render: function (context) {
-        }
+        render: function (context) {},
+        describe: function () { return this.type; }
       },
-      world = Object.create(entity),
+      world = extend(entity, {
+        describe: function () {
+          return this.type + " (" + this.width+ "x" + this.height + ")";
+        }
+      }),
       actor = extend(entity, {
         type: "Actor",
         position: {
@@ -20,10 +24,22 @@
         size: {
           w: 0,
           h: 0
+        },
+        describe: function () {
+          var pos = this.position;
+
+          return this.type + " (" + pos.x + ", " + pos.y + ")";
         }
       }),
       camera = Object.create(entity),
-      player = Object.create(actor);
+      player = Object.create(actor),
+      debug = extend(actor, {
+        position: {
+          x: 10,
+          y: 10
+        },
+        targets: []
+      });
 
   function snapshot(entity) {
     var canvas = NS.document.createElement("canvas"),
@@ -50,7 +66,7 @@
   }
 
   camera.type = "Camera";
-  camera.bindToCanvas = function (canvas) {
+  camera.attach = function (canvas) {
     this.width = canvas.width;
     this.height = canvas.height;
     this.context = canvas.getContext("2d");
@@ -78,7 +94,7 @@
 
     if (config) {
       if (config.canvas) {
-        newCamera.bindToCanvas(config.canvas);
+        newCamera.attach(config.canvas);
       }
     }
 
@@ -152,13 +168,37 @@
     this.renderBackground(context);
   };
 
-  gameApp.create = function () {
-    var newGame = Object.create(this);
+  debug.watch = function () {
+    this.targets = Array.prototype.slice.call(arguments);
+  };
 
-    newGame.world = world.create(1024, 1024);
-    newGame.world.addPlayer(player.create({
-      controller: "mouse"
-    }));
+  debug.log = function (message, offset, context) {
+    context.fillStyle = "rgb(0, 128, 32)";
+    context.fillText(message, 0, this.position.y + offset);
+  }
+
+  debug.render = function (context) {
+    var targets = this.targets,
+      targetsCount = targets.length,
+      target,
+      idx;
+
+    for (idx = 0; idx < targetsCount; idx++) {
+      this.log(targets[idx].describe(), idx * 10, context);
+    }
+  };
+
+  gameApp.create = function () {
+    var newGame = Object.create(this),
+      newWorld = world.create(1024, 1024),
+      newPlayer = player.create({controller: "mouse"}),
+      debugger_;
+
+    newGame.world = newWorld;
+    newGame.world.addPlayer(newPlayer);
+    debugger_ = Object.create(debug);
+    debugger_.watch(newWorld, newPlayer);
+    newGame.world.actors.push(debugger_);
 
     LOG("Created a new game.");
     return newGame;
