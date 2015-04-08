@@ -21,7 +21,7 @@
           x: null,
           y: null
         },
-        size: {
+        dimensions: {
           w: 0,
           h: 0
         },
@@ -32,7 +32,12 @@
         }
       }),
       camera = Object.create(entity),
-      player = Object.create(actor),
+      player = extend(actor, {
+        dimensions: {
+          w: 5,
+          h: 5
+        }
+      }),
       debug = extend(actor, {
         position: {
           x: 10,
@@ -63,6 +68,14 @@
     }
 
     return newEntity;
+  }
+
+  function efficiently(callback) {
+    return function () {
+      this.context.save();
+      callback();
+      this.context.restore();
+    };
   }
 
   camera.type = "Camera";
@@ -98,7 +111,7 @@
       }
     }
 
-    newCamera.update = this._update.bind(newCamera);
+    newCamera.update = efficiently(this._update.bind(newCamera));
 
     LOG("Initialised Camera with context: " + this.context);
     return newCamera;
@@ -118,13 +131,29 @@
     LOG("Created a new player.");
     return newPlayer;
   };
+  player.render = function (context) {
+    var pos = this.position,
+      dim = this.dimensions,
+      style = "rgb(255, 0, 0)";
+
+    context.fillStyle = style;
+    context.fillRect(pos.x, pos.y, dim.w, dim.h);
+  };
 
   world.type = "World";
   world.teleport = function (actor, x, y) {
+    if (x === "center") {
+      x = this.width / 2;
+    }
+    if (y === "center") {
+      y = this.height / 2;
+    }
+    actor.position.x = x;
+    actor.position.y = y;
     this.actors.push(actor);
   };
   world.addPlayer = function (player) {
-    this.teleport(player, "center", "center");
+    this.teleport(player, 100, 100);
 
     LOG("Welcome, " + player.name + ".");
   };
@@ -175,7 +204,7 @@
   debug.log = function (message, offset, context) {
     context.fillStyle = "rgb(0, 128, 32)";
     context.fillText(message, 0, this.position.y + offset);
-  }
+  };
 
   debug.render = function (context) {
     var targets = this.targets,
