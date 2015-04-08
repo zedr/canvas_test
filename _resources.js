@@ -87,6 +87,9 @@
     this.context = canvas.getContext("2d");
     return this;
   };
+  camera.clear = function() {
+    this.context.clearRect(0, 0, this.width, this.height);
+  };
   camera.draw = function(entity) {
     if (!entity._cached) {
       entity._cached = snapshot(entity);
@@ -99,6 +102,7 @@
       context = this.context,
       idx;
 
+    this.clear();
     this.draw(this.target);
     for (idx = 0; idx < actorsCount; idx++) {
       actors[idx].render(context);
@@ -153,6 +157,8 @@
     actor.position.x = x;
     actor.position.y = y;
     this.actors.push(actor);
+  };
+  world.move = function(actor, x, y) {
   };
   world.addPlayer = function(player) {
     this.teleport(player, 100, 100);
