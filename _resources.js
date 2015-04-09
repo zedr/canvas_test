@@ -96,8 +96,16 @@
     this.height = canvas.height;
     this.context = canvas.getContext("2d");
     this.canvas = canvas;
-    this.canvasOffset = getOffset(canvas);
     return this;
+  };
+  camera.bindMouse = function(actor) {
+    var canvas = this.canvas,
+      offset = getOffset(canvas);
+
+    canvas.addEventListener("click", handleClick.bind(player, offset));
+    canvas.oncontextmenu = function(event) {
+      event.preventDefault();
+    };
   };
   camera.clear = function() {
     this.context.clearRect(0, 0, this.width, this.height);
@@ -305,18 +313,11 @@
     };
   }
   gameApp.control = function(playerNo, type) {
-    var canvas,
-      offset,
-      player = this.players[playerNo - 1];
+    var player = this.players[playerNo - 1];
 
     if (player) {
       if (type === "mouse") {
-        canvas = this.camera.canvas;
-        offset = this.camera.canvasOffset;
-        canvas.addEventListener("click", handleClick.bind(player, offset));
-        canvas.oncontextmenu = function(event) {
-          event.preventDefault();
-        };
+        this.camera.bindMouse(player);
       }
     } else {
       LOG("No such player " + playerNo + ".");
