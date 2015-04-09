@@ -172,6 +172,9 @@
   };
 
   world.type = "World";
+  world.isWithinBounds = function(x, y) {
+    return ((x >= 0 && y >= 0) && (x < this.width && y < this.height))
+  };
   world.teleport = function(actor, x, y) {
     if (x === "center") {
       x = this.width / 2;
@@ -179,8 +182,10 @@
     if (y === "center") {
       y = this.height / 2;
     }
-    actor.position.x = x;
-    actor.position.y = y;
+    if (this.isWithinBounds(x, y)) {
+      actor.position.x = x;
+      actor.position.y = y;
+    }
   };
   world.move = function(actor) {
     var pos = actor.position,
