@@ -194,10 +194,10 @@
       x,
       y;
 
-    if (dest && speed) {
+    if (dest && speed > 0) {
       dx = dest.x;
       dy = dest.y;
-      if (Math.abs(px - dx) < 2 && Math.abs(py - dy) < 2) {
+      if (Math.abs(px - dx) < speed && Math.abs(py - dy) < speed) {
         actor.destination = null
       } else {
         x = dx - px;
