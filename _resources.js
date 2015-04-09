@@ -90,6 +90,13 @@
     return (box.x || box.left) * 1.5;
   }
 
+  function handleClick(offset, event) {
+    this.destination = {
+      x: event.clientX - offset, 
+      y: event.clientY - offset
+    };
+  }
+
   camera.type = "Camera";
   camera.attach = function(canvas) {
     this.width = canvas.width;
@@ -102,7 +109,7 @@
     var canvas = this.canvas,
       offset = getOffset(canvas);
 
-    canvas.addEventListener("click", handleClick.bind(player, offset));
+    canvas.addEventListener("click", handleClick.bind(actor, offset));
     canvas.oncontextmenu = function(event) {
       event.preventDefault();
     };
@@ -306,12 +313,6 @@
     this.camera.view(this.world);
     return this;
   };
-  function handleClick(offset, event) {
-    this.destination = {
-      x: event.clientX - offset, 
-      y: event.clientY - offset
-    };
-  }
   gameApp.control = function(playerNo, type) {
     var player = this.players[playerNo - 1];
 
