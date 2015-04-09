@@ -27,6 +27,8 @@
         w: 0,
         h: 0
       },
+      destination: null,
+      speed: 0,
       describe: function() {
         var pos = this.position;
 
@@ -38,7 +40,8 @@
       dimensions: {
         w: 5,
         h: 5
-      }
+      },
+      speed: 2
     }),
     debug = extend(actor, {
       position: {
@@ -80,11 +83,20 @@
     };
   }
 
+  function getOffset(canvas) {
+    var box = canvas.getBoundingClientRect();
+
+    // x for Firefox, left for Chrome
+    return (box.x || box.left) * 1.5;
+  }
+
   camera.type = "Camera";
   camera.attach = function(canvas) {
     this.width = canvas.width;
     this.height = canvas.height;
     this.context = canvas.getContext("2d");
+    this.canvas = canvas;
+    this.canvasOffset = getOffset(canvas);
     return this;
   };
   camera.clear = function() {
@@ -130,9 +142,7 @@
   player.create = function(config) {
     var newPlayer = Object.create(this);
 
-    newPlayer.name = config.name || "Unnamed Player";
-
-    //if (config.controller === "mouse") ;
+    newPlayer.name = (config) ? config.name : "Unnamed Player";
 
     LOG("Created a new player.");
     return newPlayer;
@@ -156,14 +166,35 @@
     }
     actor.position.x = x;
     actor.position.y = y;
-    this.actors.push(actor);
   };
-  world.move = function(actor, x, y) {
-  };
-  world.addPlayer = function(player) {
-    this.teleport(player, 100, 100);
+  world.move = function(actor) {
+    var pos = actor.position,
+      dest = actor.destination,
+      speed = actor.speed,
+      px = pos.x,
+      py = pos.y,
+      len,
+      dx,
+      dy,
+      x,
+      y;
 
-    LOG("Welcome, " + player.name + ".");
+    if (dest && speed) {
+      dx = dest.x;
+      dy = dest.y;
+      if (Math.abs(px - dx) < 2 && Math.abs(py - dy) < 2) {
+        actor.destination = null
+      } else {
+        x = dx - px;
+        y = dy - py;
+        len = Math.sqrt(x * x + y * y);
+        x /= len;
+        y /= len;
+        x *= speed;
+        y *= speed;
+        this.teleport(actor, px + x, py + y);
+      }
+    }
   };
   world.create = function(width, height) {
     var newWorld = Object.create(this);
@@ -228,19 +259,29 @@
   gameApp.create = function() {
     var newGame = Object.create(this),
       newWorld = world.create(1024, 1024),
-      newPlayer = player.create({
-        controller: "mouse"
-      }),
+      newPlayer = player.create(),
       debugger_;
 
+    newGame.players = [];
     newGame.world = newWorld;
-    newGame.world.addPlayer(newPlayer);
+    newGame.addPlayer(newPlayer);
     debugger_ = Object.create(debug);
     debugger_.watch(newWorld, newPlayer);
     newGame.world.actors.push(debugger_);
 
     LOG("Created a new game.");
     return newGame;
+  };
+  gameApp.addPlayer = function(player) {
+    var world = this.world,
+      playerNo;
+
+    world.actors.push(player);
+    this.players.push(player);
+    world.teleport(player, 100, 100);
+    playerNo = this.players.length;
+
+    LOG("Welcome, player " + playerNo + ": " + player.name + ".");
   };
   gameApp._tick = function() {
     NS.requestAnimationFrame(this._tick.bind(this));
@@ -255,6 +296,31 @@
       canvas: canvas
     });
     this.camera.view(this.world);
+    return this;
+  };
+  function handleClick(offset, event) {
+    this.destination = {
+      x: event.clientX - offset, 
+      y: event.clientY - offset
+    };
+  }
+  gameApp.control = function(playerNo, type) {
+    var canvas,
+      offset,
+      player = this.players[playerNo - 1];
+
+    if (player) {
+      if (type === "mouse") {
+        canvas = this.camera.canvas;
+        offset = this.camera.canvasOffset;
+        canvas.addEventListener("click", handleClick.bind(player, offset));
+        canvas.oncontextmenu = function(event) {
+          event.preventDefault();
+        };
+      }
+    } else {
+      LOG("No such player " + playerNo + ".");
+    }
     return this;
   };
   gameApp.start = function() {

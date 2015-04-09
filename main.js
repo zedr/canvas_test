@@ -5,7 +5,7 @@
     var myGame = NS.gameApp.create(),
       canvas = NS.document.getElementById("target");
 
-    myGame.display(canvas).start();
+    myGame.display(canvas).control(1, "mouse").start();
     NS.myGame = myGame;
   }
 
