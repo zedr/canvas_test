@@ -1,8 +1,16 @@
 (function (NS, undefined) {
   "use strict";
 
-  var LOG = NS.console.log.bind(NS.console);
+  var LOG;
+  
+  try {
+    LOG = NS.console.log.bind(NS.console);
+  } catch (err) {
+    // Silence if the logger is not available.
+    LOG = function (message) {};
+  }
 
+  // Create the App nmeamespace.
   NS.App = {};
 
   function snapshot(entity) {
