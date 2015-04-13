@@ -2,7 +2,15 @@ define(["utils"], function (Utils) {
   "use strict";
 
   describe("The Utilities", function () {
-    var functionNames = ["snapshot"];
+    var functionNames = ["snapshot"],
+        canvasObject = {
+          width: 50,
+          height: 50,
+          render: function (context) {
+            context.fillStyle = "rgb(0, 128, 32)";
+            context.fillText("tested", 0, 0);
+          }
+        };
 
     it("provides all the utility functions on the App namespace", function () {
       for (var idx = 0; idx < functionNames.length; idx++) {
@@ -14,23 +22,15 @@ define(["utils"], function (Utils) {
       expect(typeof Utils.LOG).toEqual("function");
     });
 
-    it("can create a snapshot of an object on a special canvas", function () {
-      var canvasObject = {
-            width: 50,
-            height: 50,
-            render: function (context) {
-              context.fillStyle = "rgb(0, 128, 32)";
-              context.fillText("tested", 0, 0);
-            }
-          },
-          snapped = Utils.snapshot(canvasObject);
+    it("creates a snapshot of an object on a special canvas", function () {
+      var snapped = Utils.snapshot(canvasObject);
 
       expect(snapped.width).toEqual(canvasObject.width);
       expect(snapped.height).toEqual(canvasObject.height);
       expect(snapped.nodeName).toEqual("CANVAS");
     });
 
-    it("can extend a return a new object from a prototype", function () {
+    it("extends and returns a new object from a prototype", function () {
       var proto = {
             type: "proto",
             describe: function () {
@@ -43,6 +43,21 @@ define(["utils"], function (Utils) {
 
       expect(extended.type).toEqual("extended");
       expect(extended.describe()).toEqual("I am extended");
+    });
+
+    it("updates saves, renders, and restores the context", function () {
+      var canvas = Utils.snapshot(canvasObject),
+          camera = {},
+          method = function () {},
+          efficientMethod,
+          func;
+
+      camera.context = canvas.getContext("2d");
+      spyOn(camera.context, "save");
+      efficientMethod = Utils.efficiently(method);
+      efficientMethod.call(camera);
+
+      expect(camera.context.save).toHaveBeenCalled();
     });
   });
 });
