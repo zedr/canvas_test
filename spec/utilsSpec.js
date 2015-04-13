@@ -14,7 +14,7 @@ define(["utils"], function (Utils) {
       expect(typeof Utils.LOG).toEqual("function");
     });
 
-    it("creates a snapshot of an object on a dedicated canvas", function () {
+    it("can create a snapshot of an object on a special canvas", function () {
       var canvasObject = {
             width: 50,
             height: 50,
@@ -28,6 +28,21 @@ define(["utils"], function (Utils) {
       expect(snapped.width).toEqual(canvasObject.width);
       expect(snapped.height).toEqual(canvasObject.height);
       expect(snapped.nodeName).toEqual("CANVAS");
+    });
+
+    it("can extend a return a new object from a prototype", function () {
+      var proto = {
+            type: "proto",
+            describe: function () {
+              return "I am " + this.type;
+            }
+          },
+          extended = Utils.extend(proto, {
+            type: "extended"
+          });
+
+      expect(extended.type).toEqual("extended");
+      expect(extended.describe()).toEqual("I am extended");
     });
   });
 });
