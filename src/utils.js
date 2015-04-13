@@ -1,20 +1,18 @@
-(function (NS, undefined) {
+define("utils", ["window"], function (NS) {
   "use strict";
 
   var LOG;
-  
+
   try {
     LOG = NS.console.log.bind(NS.console);
   } catch (err) {
     // Silence if the logger is not available.
-    LOG = function (message) {};
+    LOG = function (message) {
+    };
   }
 
-  // Create the App nmeamespace.
-  NS.App = {};
-
   function snapshot(entity) {
-    var canvas = NS.document.createElement("canvas"),
+    var canvas = document.createElement("canvas"),
         context;
 
     canvas.width = entity.width;
@@ -60,7 +58,7 @@
   }
 
   // Export the module.
-  NS.App.Utils = {
+  return {
     snapshot: snapshot,
     extend: extend,
     efficiently: efficiently,
@@ -69,4 +67,4 @@
     LOG: LOG
   };
 
-}(this));
+});

@@ -8,6 +8,6 @@
     game.display(canvas).control(1, "mouse").start();
 
     NS.currentGame = game;
-  }
+  };
 
 }(this));

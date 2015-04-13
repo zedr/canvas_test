@@ -1,2 +1,2 @@
 tests:
-	jasmine-node .
+	karma start --single-run
