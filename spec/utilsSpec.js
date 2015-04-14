@@ -77,5 +77,6 @@ define(["utils"], function (Utils) {
       expect(typeof offset).toBe("number");
       expect(offset).toBeGreaterThan(-1);
     });
+
   });
 });
