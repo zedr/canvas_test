@@ -2,7 +2,7 @@ define(["utils"], function (Utils) {
   "use strict";
 
   describe("The Utilities", function () {
-    var functionNames = ["snapshot"],
+    var functionNames = ["snapshot", "extend", "efficiently", "getOffset"],
         canvasObject = {
           width: 50,
           height: 50,
@@ -60,6 +60,14 @@ define(["utils"], function (Utils) {
 
       expect(camera.context.save).toHaveBeenCalled();
       expect(camera.context.restore).toHaveBeenCalled();
+    });
+
+    it("infers an offset value from a canvas bounding box", function () {
+      var canvas = Utils.snapshot(canvasObject),
+          offset = Utils.getOffset(canvas);
+
+      expect(typeof offset).toBe("number");
+      expect(offset).toBeGreaterThan(-1);
     });
   });
 });
