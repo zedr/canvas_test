@@ -1,20 +1,27 @@
 define(["utils"], function (Utils) {
   "use strict";
 
+  var moduleExports = [
+    "snapshot",
+    "extend",
+    "efficiently",
+    "getOffset",
+    "LOG"
+  ];
+
   describe("The Utilities", function () {
-    var functionNames = ["snapshot", "extend", "efficiently", "getOffset"],
-        canvasObject = {
-          width: 50,
-          height: 50,
-          render: function (context) {
-            context.fillStyle = "rgb(0, 128, 32)";
-            context.fillText("tested", 0, 0);
-          }
-        };
+    var canvasObject = {
+      width: 50,
+      height: 50,
+      render: function (context) {
+        context.fillStyle = "rgb(0, 128, 32)";
+        context.fillText("tested", 0, 0);
+      }
+    };
 
     it("provides all the utility functions on the App namespace", function () {
-      for (var idx = 0; idx < functionNames.length; idx++) {
-        expect(typeof Utils[functionNames[idx]]).toEqual("function");
+      for (var idx = 0; idx < moduleExports.length; idx++) {
+        expect(typeof Utils[moduleExports[idx]]).toEqual("function");
       }
     });
 
@@ -48,7 +55,8 @@ define(["utils"], function (Utils) {
     it("updates saves, renders, and restores the context", function () {
       var canvas = Utils.snapshot(canvasObject),
           camera = {},
-          method = function () {},
+          method = function () {
+          },
           efficientMethod,
           func;
 
