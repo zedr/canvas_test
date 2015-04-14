@@ -54,10 +54,12 @@ define(["utils"], function (Utils) {
 
       camera.context = canvas.getContext("2d");
       spyOn(camera.context, "save");
+      spyOn(camera.context, "restore");
       efficientMethod = Utils.efficiently(method);
       efficientMethod.call(camera);
 
       expect(camera.context.save).toHaveBeenCalled();
+      expect(camera.context.restore).toHaveBeenCalled();
     });
   });
 });
