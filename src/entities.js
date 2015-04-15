@@ -4,16 +4,20 @@ define("entities", ["utils"], function (Utils) {
   var Entity = {
         type: "Entity",
         render: function (context) {
+          throw("Method `render` not implemented for `" + this.type + "`.");
         },
         describe: function () {
           return this.type;
         },
         create: function () {
           return Object.create(this);
+        },
+        extend: function (extensions) {
+          return Utils.extend(this, extensions);
         }
       },
 
-      Actor = Utils.extend(Entity, {
+      Actor = Entity.extend({
         type: "Actor",
         position: {
           x: null,
@@ -32,7 +36,7 @@ define("entities", ["utils"], function (Utils) {
         }
       }),
 
-      Player = Utils.extend(Actor, {
+      Player = Actor.extend({
         type: "Player",
         dimensions: {
           w: 5,
