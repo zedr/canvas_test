@@ -43,8 +43,10 @@ define(["utils", "entities"], function (Utils, Entities) {
       var myActor = Entities.Actor.create();
 
       expect(myActor.type).toEqual("Actor");
+      // Dimensions can be 0 or greater.
       expect(myActor.dimensions.w).toBeGreaterThan(-1);
       expect(myActor.dimensions.h).toBeGreaterThan(-1);
+      // Speed is 0 or greater.
       expect(myActor.speed).toBeGreaterThan(-1);
     });
 
@@ -55,6 +57,7 @@ define(["utils", "entities"], function (Utils, Entities) {
       spyOn(context, "fillRect");
       player1.render(context);
 
+      // Players have a bounding box (rectangle).
       expect(context.fillRect).toHaveBeenCalled();
 
     });
