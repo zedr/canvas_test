@@ -1,4 +1,4 @@
-define(["entities"], function (Entities) {
+define(["utils", "entities"], function (Utils, Entities) {
   "use strict";
 
   var Camera = Entities.Entity.extend({
@@ -60,9 +60,9 @@ define(["entities"], function (Entities) {
       }
     }
 
-    newCamera.update = efficiently(this._update.bind(newCamera));
+    newCamera.update = Utils.efficiently(this._update.bind(newCamera));
 
-    LOG("Initialised Camera with context: " + this.context);
+    Utils.LOG("Initialised Camera with context: " + this.context);
     return newCamera;
   };
 

@@ -9,7 +9,7 @@ define(["utils"], function (Utils) {
     "LOG"
   ];
 
-  describe("The Utilities", function () {
+  describe("The Utilities module", function () {
     var canvasObject = {
       width: 50,
       height: 50,
