@@ -36,6 +36,7 @@ define(["utils", "entities"], function (Utils, Entities) {
 
   Camera.view = function (target) {
     this.target = target;
+    return this;
   };
 
   Camera._update = function () {
