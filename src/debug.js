@@ -1,7 +1,7 @@
-define("debugger", ["entities"], function (Entities) {
+define("debug", ["entities"], function (entitiesModule) {
   "use strict";
 
-  var Debugger = extend(Entities.Actor, {
+  var Debugger = entitiesModule.Actor.extend({
     position: {
       x: 10,
       y: 10

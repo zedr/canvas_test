@@ -1,9 +1,17 @@
-define(["utils", "entities"], function (Utils, Entities) {
+define(["utils", "entities"], function (utilsModule, entitiesModule) {
   "use strict";
 
-  var Camera = Entities.Entity.extend({
+  var Camera = entitiesModule.Entity.extend({
     type: "Camera"
   });
+
+  function handleClick(offset, event) {
+    // jshint -W040: this is called after being bound to an actor.
+    this.destination = {
+      x: event.clientX - offset,
+      y: event.clientY - offset
+    };
+  }
 
   Camera.attach = function (canvas) {
     this.width = canvas.width;
@@ -15,7 +23,7 @@ define(["utils", "entities"], function (Utils, Entities) {
 
   Camera.bindMouse = function (actor) {
     var canvas = this.canvas,
-        offset = getOffset(canvas);
+        offset = utilsModule.getOffset(canvas);
 
     canvas.addEventListener("click", handleClick.bind(actor, offset));
     canvas.oncontextmenu = function (event) {
@@ -29,7 +37,7 @@ define(["utils", "entities"], function (Utils, Entities) {
 
   Camera.draw = function (entity) {
     if (!entity._cached) {
-      entity._cached = snapshot(entity);
+      entity._cached = utilsModule.snapshot(entity);
     }
     return this.context.drawImage(entity._cached, 0, 0);
   };
@@ -61,9 +69,9 @@ define(["utils", "entities"], function (Utils, Entities) {
       }
     }
 
-    newCamera.update = Utils.efficiently(this._update.bind(newCamera));
+    newCamera.update = utilsModule.efficiently(this._update.bind(newCamera));
 
-    Utils.LOG("Initialised Camera with context: " + this.context);
+    utilsModule.LOG("Initialised Camera with context: " + this.context);
     return newCamera;
   };
 

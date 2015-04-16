@@ -1,7 +1,5 @@
-define("window", function () {
+define("window", function (NS) {
   "use strict";
 
-  return {
-    window: window
-  };
-});
+  return NS;
+}(this));

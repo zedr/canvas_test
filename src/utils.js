@@ -50,20 +50,12 @@ define("utils", ["window"], function (NS) {
     return (box.x || box.left) * 1.5;
   }
 
-  function handleClick(offset, event) {
-    this.destination = {
-      x: event.clientX - offset,
-      y: event.clientY - offset
-    };
-  }
-
   // Export the module.
   return {
     snapshot: snapshot,
     extend: extend,
     efficiently: efficiently,
     getOffset: getOffset,
-    handleClick: handleClick,
     LOG: LOG
   };
 

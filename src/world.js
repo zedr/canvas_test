@@ -1,21 +1,18 @@
-(function(NS, undefined) {
+define("world", ["utils", "entities"], function (Utils, Entities) {
   "use strict";
 
-  var LOG = NS.App.Utils.LOG,
-      extend = NS.App.Utils.extend,
-      Entity = NS.App.Entities.Entity,
-      World = extend(Entity, {
-        type: "World",
-        describe: function() {
-          return this.type + " (" + this.width + "x" + this.height + ")";
-        }
-      });
+  var World = Entities.Entity.extend({
+    type: "World",
+    describe: function () {
+      return this.type + " (" + this.width + "x" + this.height + ")";
+    }
+  });
 
-  World.isWithinBounds = function(x, y) {
+  World.isWithinBounds = function (x, y) {
     return ((x >= 0 && y >= 0) && (x < this.width && y < this.height))
   };
 
-  World.teleport = function(actor, x, y) {
+  World.teleport = function (actor, x, y) {
     if (x === "center") {
       x = this.width / 2;
     }
@@ -28,7 +25,7 @@
     }
   };
 
-  World.move = function(actor) {
+  World.move = function (actor) {
     var pos = actor.position,
         dest = actor.destination,
         speed = actor.speed,
@@ -58,18 +55,18 @@
     }
   };
 
-  World.create = function(width, height) {
+  World.create = function (width, height) {
     var newWorld = Object.create(this);
 
     newWorld.width = width;
     newWorld.height = height;
     newWorld.actors = [];
 
-    LOG("Created a new world " + width + "x" + height + ".");
+    Utils.LOG("Created a new world " + width + "x" + height + ".");
     return newWorld;
   };
 
-  World.update = function() {
+  World.update = function () {
     var actorsCount = this.actors.length,
         actor,
         idx;
@@ -82,7 +79,7 @@
     }
   };
 
-  World.renderBackground = function(context) {
+  World.renderBackground = function (context) {
     for (var x = 0.5; x < this.width; x += 10) {
       context.moveTo(x, 0);
       context.lineTo(x, this.height);
@@ -97,10 +94,12 @@
     context.stroke();
   };
 
-  World.render = function(context) {
+  World.render = function (context) {
     this.renderBackground(context);
   };
 
-  NS.App.World = World;
+  return {
+    World: World
+  };
 
-}(this));
+});
