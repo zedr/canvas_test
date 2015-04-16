@@ -71,6 +71,7 @@ define("game", ["window", "utils", "world", "camera", "entities", "debug"],
     this._tick();
 
     utilsModule.LOG("Game started!");
+    return true;
   };
 
   return {

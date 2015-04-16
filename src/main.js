@@ -5,5 +5,4 @@ require(["game"], function (gameModule) {
       game = gameModule.Game.create();
 
   game.display(canvas).control(1, "mouse").start();
-
 });

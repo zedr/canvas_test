@@ -1,4 +1,4 @@
-define(["game"], function (gameModule) {
+define(["window", "game"], function (NS, gameModule) {
   "use strict";
 
   var Game = gameModule.Game;
@@ -17,6 +17,12 @@ define(["game"], function (gameModule) {
 
       expect(game).toBeDefined();
     });
-  });
 
+    it("can display the game on a canvas", function () {
+      var game = Game.create(gameConfig),
+          canvas = NS.document.createElement("canvas");
+
+      expect(game.display(canvas).start()).toEqual(true);
+    });
+  });
 });
