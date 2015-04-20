@@ -39,28 +39,38 @@ define(["utils", "entities"], function (Utils, Entities) {
       }
     });
 
-    it("provides actors that have discrete dimensions and speed", function () {
-      var myActor = Entities.Actor.create();
-
-      expect(myActor.type).toEqual("Actor");
-      // Dimensions can be 0 or greater.
-      expect(myActor.dimensions.w).toBeGreaterThan(-1);
-      expect(myActor.dimensions.h).toBeGreaterThan(-1);
-      // Speed is 0 or greater.
-      expect(myActor.speed).toBeGreaterThan(-1);
-    });
-
     it("provides players that can render themselves", function () {
-      var player1 = Entities.Player.create(),
+      var myPlayer = Entities.Player.create(),
           context = FakeContext.create();
 
       spyOn(context, "fillRect");
-      player1.render(context);
+      myPlayer.render(context);
 
       // Players have a bounding box (rectangle).
       expect(context.fillRect).toHaveBeenCalled();
-
     });
 
+    describe("the Actor prototype", function () {
+      var myActor = Entities.Actor.create();
+
+      it("is of type \"Actor\"", function () {
+        expect(myActor.type).toEqual("Actor");
+      });
+
+      it("it has dimensions of zero or greater", function () {
+        expect(myActor.dimensions.w).toBeGreaterThan(-1);
+        expect(myActor.dimensions.h).toBeGreaterThan(-1);
+      });
+
+      it("its vector has a magnitude (speed) of zero or greater", function () {
+        expect(myActor.speed).toBeGreaterThan(-1);
+      });
+
+      it("it has a position", function () {
+        expect(myActor.position).toBeTruthy();
+        expect(myActor.position.x).toBeDefined();
+        expect(myActor.position.y).toBeDefined();
+      });
+    });
   });
 });

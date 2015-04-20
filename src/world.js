@@ -9,19 +9,13 @@ define("world", ["utils", "entities"], function (Utils, Entities) {
   });
 
   World.isWithinBounds = function (x, y) {
-    return ((x >= 0 && y >= 0) && (x < this.width && y < this.height))
+    return ((x >= 0 && y >= 0) && (x < this.width && y < this.height));
   };
 
   World.teleport = function (actor, x, y) {
-    if (x === "center") {
-      x = this.width / 2;
-    }
-    if (y === "center") {
-      y = this.height / 2;
-    }
     if (this.isWithinBounds(x, y)) {
-      actor.position.x = x;
-      actor.position.y = y;
+      actor.position.x =  x;
+      actor.position.y =  y;
     }
   };
 
@@ -41,7 +35,7 @@ define("world", ["utils", "entities"], function (Utils, Entities) {
       dx = dest.x;
       dy = dest.y;
       if (Math.abs(px - dx) < speed && Math.abs(py - dy) < speed) {
-        actor.destination = null
+        actor.destination = null;
       } else {
         x = dx - px;
         y = dy - py;
@@ -84,6 +78,9 @@ define("world", ["utils", "entities"], function (Utils, Entities) {
       context.moveTo(x, 0);
       context.lineTo(x, this.height);
     }
+
+    context.strokeStyle = "#666666";
+    context.stroke();
 
     for (var y = 0.5; y < this.height; y += 10) {
       context.moveTo(0, y);

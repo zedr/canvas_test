@@ -1,4 +1,4 @@
-define(["camera"], function (cameraModule) {
+define(["camera", "entities"], function (cameraModule, entitiesModule) {
   "use strict";
 
   var Camera = cameraModule.Camera;
@@ -10,12 +10,10 @@ define(["camera"], function (cameraModule) {
   });
 
   describe("The Camera prototype", function () {
-    it("can attach to a canvas", function() {
-      var canvas = document.createElement("canvas"),
-          camera = Camera.create();
+    var canvas = document.createElement("canvas"),
+        camera = Camera.create().attach(canvas);
 
-      camera.attach(canvas);
-
+    it("is attached to a canvas", function () {
       expect(camera.canvas).toEqual(canvas);
       expect(camera.width).toEqual(canvas.width);
       expect(camera.height).toEqual(canvas.height);
@@ -23,16 +21,25 @@ define(["camera"], function (cameraModule) {
     });
 
     it("can clear its context", function () {
-      var canvas = document.createElement("canvas"),
-          camera = Camera.create().attach(canvas);
-
       spyOn(camera.context, "clearRect");
-
       camera.clear();
-
       expect(camera.context.clearRect)
           .toHaveBeenCalledWith(0, 0, canvas.width, canvas.height);
+      camera.context.clearRect.isSpy = false;
+    });
+
+    it("can focus on a position", function () {
+      var x = canvas.width,
+          y = canvas.height;
+
+      camera.focus = {x: x, y: y};
+    });
+
+    it("can focus on an actor", function () {
+      var actor = entitiesModule.Actor.create();
+
+      camera.focusOn(actor);
+      expect(camera.focus).toEqual(actor.position);
     });
   });
-
 });

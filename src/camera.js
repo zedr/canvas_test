@@ -2,7 +2,8 @@ define(["utils", "entities"], function (utilsModule, entitiesModule) {
   "use strict";
 
   var Camera = entitiesModule.Entity.extend({
-    type: "Camera"
+    type: "Camera",
+    defaultFocus: {x: 0, y:0}
   });
 
   function handleClick(offset, event) {
@@ -18,6 +19,8 @@ define(["utils", "entities"], function (utilsModule, entitiesModule) {
     this.height = canvas.height;
     this.context = canvas.getContext("2d");
     this.canvas = canvas;
+
+    utilsModule.LOG("Attached camera to canvas: #" + canvas.id);
     return this;
   };
 
@@ -35,10 +38,11 @@ define(["utils", "entities"], function (utilsModule, entitiesModule) {
     this.context.clearRect(0, 0, this.width, this.height);
   };
 
-  Camera.draw = function (entity) {
+  Camera.renderTarget = function (entity) {
     if (!entity._cached) {
       entity._cached = utilsModule.snapshot(entity);
     }
+
     return this.context.drawImage(entity._cached, 0, 0);
   };
 
@@ -54,10 +58,16 @@ define(["utils", "entities"], function (utilsModule, entitiesModule) {
         idx;
 
     this.clear();
-    this.draw(this.target);
+    this.renderTarget(this.target);
     for (idx = 0; idx < actorsCount; idx++) {
       actors[idx].render(context);
     }
+  };
+
+  Camera.focusOn = function (actor) {
+
+    this.focus = actor.position;
+    return this;
   };
 
   Camera.create = function (config) {
@@ -69,9 +79,10 @@ define(["utils", "entities"], function (utilsModule, entitiesModule) {
       }
     }
 
+    newCamera.focus = this.defaultFocus;
+
     newCamera.update = utilsModule.efficiently(this._update.bind(newCamera));
 
-    utilsModule.LOG("Initialised Camera with context: " + this.context);
     return newCamera;
   };
 

@@ -51,6 +51,7 @@ define("game", ["window", "utils", "world", "camera", "entities", "debug"],
       canvas: canvas
     });
     this.camera.view(this.world);
+    this.camera.focusOn(this.players[0]);
     return this;
   };
 
