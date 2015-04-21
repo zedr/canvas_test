@@ -8,14 +8,24 @@ define("world", ["utils", "entities"], function (Utils, Entities) {
     }
   });
 
+  function actorStorage() {
+    var actors = [];
+
+    return {
+      add: function (actor, x, y) {
+
+      }
+    };
+  }
+
   World.isWithinBounds = function (x, y) {
     return ((x >= 0 && y >= 0) && (x < this.width && y < this.height));
   };
 
   World.teleport = function (actor, x, y) {
     if (this.isWithinBounds(x, y)) {
-      actor.position.x =  x;
-      actor.position.y =  y;
+      actor.position.x = x;
+      actor.position.y = y;
     }
   };
 
